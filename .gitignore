@@ -1,0 +1,16 @@
+﻿# Node
+web/node_modules/
+web/.vite/
+web/dist/
+
+# Python
+server/.venv/
+server/__pycache__/
+server/.pytest_cache/
+server/*.sqlite3
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.env
