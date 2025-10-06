@@ -1,0 +1,28 @@
+﻿services:
+  db:
+    image: postgres:16
+    container_name: blueprint_db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./server
+    container_name: blueprint_api
+    environment:
+      # inside Docker network, use host "db"
+      DATABASE_URL: postgresql+asyncpg://appuser:apppass@db:5432/appdb
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+volumes:
+  db_data:
