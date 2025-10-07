@@ -1,4 +1,4 @@
-﻿[build]
+[build]
   base = "web"
   publish = "dist"
   command = "npm ci && npm run build"
