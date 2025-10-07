@@ -24,5 +24,17 @@
     ports:
       - "8000:8000"
 
+  web:
+    build:
+      context: ./web
+    container_name: blueprint_web
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    environment:
+      - VITE_API_BASE=http://127.0.0.1:8000
+
+
 volumes:
   db_data:

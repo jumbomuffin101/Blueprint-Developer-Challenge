@@ -1,47 +1,107 @@
-﻿import { useState } from 'react'
-import { api } from '../lib/api'
+﻿import { useEffect, useState } from "react";
+import { api } from "../lib/api";
+import { toMessage } from "../lib/errors";
 
 export default function DecryptPage() {
-  const [privKey, setPrivKey] = useState('')
-  const [cipher, setCipher] = useState('')
-  const [result, setResult] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [privKey, setPrivKey] = useState("");
+  const [cipher, setCipher] = useState("");
+  const [result, setResult] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState("");
+
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(""), 1500);
+    return () => clearTimeout(t);
+  }, [copied]);
 
   const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(''); setResult(''); setLoading(true)
+    e.preventDefault();
+    setError("");
+    setResult("");
+    setLoading(true);
     try {
-      const res = await api.decrypt({ key: privKey, data: cipher })
-      setResult(res.data)
-    } catch (err:any) {
-      setError(err.message || 'Request failed')
+      // Allow pasted JSON or extra wrapper content; extract PEM block
+      let cleaned = privKey.trim();
+      try {
+        const maybe = JSON.parse(cleaned) as unknown;
+        if (typeof maybe === "object" && maybe && "key" in maybe) {
+          cleaned = String((maybe as { key: unknown }).key);
+        }
+      } catch { /* not JSON; ignore */ }
+      const m = cleaned.match(/-----BEGIN RSA PRIVATE KEY-----[\s\S]+?-----END RSA PRIVATE KEY-----/);
+      if (m) cleaned = m[0];
+
+      const res = await api.decrypt({ key: cleaned, data: cipher });
+      setResult(res.data);
+    } catch (err: unknown) {
+      setError(toMessage(err));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  const onClear = () => {
+    setPrivKey("");
+    setCipher("");
+    setResult("");
+    setError("");
+  };
+
+  const onCopy = async () => {
+    const { copyText } = await import("../lib/clipboard");
+    const ok = await copyText(result);
+    if (ok) setCopied("Plaintext copied!");
+  };
 
   return (
-    <div style={{maxWidth: 900, margin: '24px auto', padding: 16}}>
-      <h1>Decrypt</h1>
-      <form onSubmit={onSubmit} style={{display:'grid', gap: 12}}>
+    <div className="card">
+      <h1 className="title">Decrypt</h1>
+
+      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
         <label>
           Private Key (PEM)
-          <textarea value={privKey} onChange={e=>setPrivKey(e.target.value)} rows={10} style={{width:'100%'}} placeholder="-----BEGIN RSA PRIVATE KEY-----"/>
+          <textarea
+            rows={8}
+            value={privKey}
+            onChange={(e) => setPrivKey(e.target.value)}
+            placeholder="-----BEGIN RSA PRIVATE KEY-----"
+          />
         </label>
+
         <label>
           Ciphertext (base64)
-          <textarea value={cipher} onChange={e=>setCipher(e.target.value)} rows={6} style={{width:'100%'}} placeholder="base64 ciphertext from Encrypt"/>
+          <textarea
+            rows={4}
+            value={cipher}
+            onChange={(e) => setCipher(e.target.value)}
+            placeholder="Paste encrypted text here"
+          />
         </label>
-        <button disabled={loading} type="submit">{loading ? 'Decrypting…' : 'Decrypt'}</button>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className="btn" disabled={loading} type="submit">
+            {loading ? "Decrypting…" : "Decrypt"}
+          </button>
+          <button type="button" className="btn secondary" onClick={onClear} disabled={loading}>
+            Clear
+          </button>
+        </div>
       </form>
-      {error && <p style={{color:'crimson', marginTop:12}}>Error: {error}</p>}
+
+      {error && <p className="alert error">Error: {error}</p>}
+
       {result && (
-        <div style={{marginTop:12}}>
-          <h3>Plaintext</h3>
-          <textarea readOnly rows={4} style={{width:'100%'}} value={result}/>
+        <div style={{ marginTop: 12 }}>
+          <h3 className="title">Plaintext</h3>
+          <textarea readOnly rows={6} value={result} />
+          <div className="row-actions">
+            <button className="iconbtn" onClick={onCopy}>Copy</button>
+            {copied && <span className="toast">{copied}</span>}
+          </div>
         </div>
       )}
     </div>
-  )
+  );
 }

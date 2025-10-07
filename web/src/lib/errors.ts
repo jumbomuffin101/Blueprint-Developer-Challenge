@@ -1,0 +1,7 @@
+// Turn unknown errors into a readable message
+export function toMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === "string") return err;
+  try { return JSON.stringify(err); } catch { /* ignore */ }
+  return String(err);
+}
