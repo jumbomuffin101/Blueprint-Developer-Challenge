@@ -1,6 +1,5 @@
 ﻿import os
 import time
-import uiud
 
 from typing import AsyncGenerator
 from dotenv import load_dotenv
