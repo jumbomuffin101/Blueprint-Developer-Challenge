@@ -1,11 +1,12 @@
-[build]
-  base    = "web"
+﻿[build]
+  base = "web"
   publish = "dist"
   command = "npm ci && npm run build"
 
 [build.environment]
   NODE_VERSION = "20"
 
+# React Router SPA fallback
 [[redirects]]
   from = "/*"
   to   = "/index.html"
