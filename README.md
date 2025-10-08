@@ -32,3 +32,8 @@ uvicorn app.main:app --reload
 cd ../web
 npm install
 npm run dev
+
+┌──────────────┐ HTTP/JSON ┌──────────────┐ SQL ┌──────────────┐
+│ React (Vite)│ ─────────────────────▶ │ FastAPI │ ───────────────▶ │ PostgreSQL │
+│ Frontend │ ◀───────────────────── │ Backend │ ◀────────────── │ (Logs DB) │
+└──────────────┘ └──────────────┘ └──────────────┘

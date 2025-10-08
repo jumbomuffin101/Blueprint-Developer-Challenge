@@ -14,3 +14,6 @@ server/*.sqlite3
 Thumbs.db
 .vscode/
 .env
+
+# Local Netlify folder
+.netlify

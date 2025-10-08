@@ -6,7 +6,11 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# React Router SPA fallback
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# SPA fallback
 [[redirects]]
   from = "/*"
   to   = "/index.html"
