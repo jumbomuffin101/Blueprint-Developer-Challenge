@@ -25,31 +25,6 @@ The app allows users to:
 
 ---
 
-## 🧠 Architecture
-
-```mermaid
-flowchart LR
-  subgraph Frontend["🖥️ React (Vite, TypeScript)"]
-    A1[Encrypt Form]
-    A2[Decrypt Form]
-    A3[Logs Page]
-  end
-
-  subgraph NetlifyAPI["☁️ Netlify Functions (api.mjs)"]
-    B1[/POST /api/v1/encrypt/]
-    B2[/POST /api/v1/decrypt/]
-    B3[/GET /api/v1/logs/]
-  end
-
-  subgraph Database["🗄️ PostgreSQL (Neon)"]
-    C1[(logs table)]
-  end
-
-  A1 -->|Public Key, Data| B1 -->|Encrypted Base64| A1
-  A2 -->|Private Key, Cipher| B2 -->|Plaintext| A2
-  A3 <--> B3
-  B1 & B2 & B3 --> C1
-
 ☁️ Production (Netlify + Neon)
 Variable	Example Value	Purpose
 DATABASE_URL	postgresql://...neon.tech/neondb?sslmode=require	Postgres connection
