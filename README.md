@@ -26,10 +26,6 @@ The app allows users to:
 ---
 
 ☁️ Production (Netlify + Neon)
-Variable	Example Value	Purpose
-DATABASE_URL	postgresql://...neon.tech/neondb?sslmode=require	Postgres connection
-VITE_API_BASE	/.netlify/functions/api	Frontend → Functions proxy
-NODE_VERSION	20	build env consistency
 
 Deployed URLs:
 
